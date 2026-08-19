@@ -31,14 +31,44 @@
     color: #1c1c1c;
   }
 
+  .app { max-width: 1420px; margin: 0 auto; }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .tab-btn {
+    appearance: none;
+    border: 1.5px solid #444;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: #dfe3e8;
+    color: #333;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 22px 7px;
+    cursor: pointer;
+  }
+  .tab-btn small { font-weight: 600; font-size: 11px; color: inherit; opacity: .75; }
+  .tab-btn:hover { background: #eceff2; }
+  .tab-btn.active {
+    background: #fff;
+    color: #7a1f1f;
+    position: relative;
+    top: 1.5px;
+    padding-bottom: 8.5px;
+  }
+
   .board {
-    max-width: 1420px;
-    margin: 0 auto;
     background: #fff;
     border: 1.5px solid #444;
     border-radius: 4px;
     overflow: hidden;
   }
+  .tab-panel.hidden { display: none; }
 
   /* ---------- Title bar ---------- */
   .board-title {
@@ -71,23 +101,27 @@
     padding: 4px;
     background: #fff;
   }
-  #diagram { display: block; width: 100%; height: auto; }
+  .diagram-wrap svg { display: block; width: 100%; height: auto; }
 
   aside.remarks {
-    flex: 0 0 250px;
+    flex: 0 0 260px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     font-size: 12px;
   }
-  .with-cmmp {
-    background: #c94f43;
-    color: #fff;
+  .badge {
     font-weight: 700;
     text-align: center;
     padding: 5px 8px;
     border-radius: 3px;
     letter-spacing: .3px;
+  }
+  .badge.with-cmmp { background: #c94f43; color: #fff; }
+  .badge.without-cmmp {
+    background: #eab4ab;
+    color: #8c2b21;
+    border: 1px solid #d18b7f;
   }
   .remark-box {
     border: 1px solid #c9a294;
@@ -205,16 +239,16 @@
   /* ---------- Dimming / highlighting ---------- */
   .dimmable { transition: opacity .22s ease; }
   .dim { opacity: 0.2; }
-  #diagram g.route.lit path { stroke-width: 3.4; }
-  #diagram g.route.lit circle.rlabel { stroke-width: 2.2; }
-  #diagram g.node.lit .icon-main { stroke-width: 2.2; stroke: #b8860b; }
+  .diagram-wrap g.route.lit path { stroke-width: 3.4; }
+  .diagram-wrap g.route.lit circle.rlabel { stroke-width: 2.2; }
+  .diagram-wrap g.node.lit .icon-main { stroke-width: 2.2; stroke: #b8860b; }
 
   /* ---------- SVG text ---------- */
-  #diagram text { font-family: "Segoe UI", system-ui, Arial, sans-serif; }
-  #diagram .zone-label { font-size: 13px; font-weight: 700; fill: #333; }
-  #diagram .caption { font-size: 10.5px; fill: #222; }
-  #diagram .caption.b { font-weight: 700; }
-  #diagram .rnum { font-size: 10px; font-weight: 700; fill: #111; }
+  .diagram-wrap text { font-family: "Segoe UI", system-ui, Arial, sans-serif; }
+  .diagram-wrap .zone-label { font-size: 13px; font-weight: 700; fill: #333; }
+  .diagram-wrap .caption { font-size: 10.5px; fill: #222; }
+  .diagram-wrap .caption.b { font-weight: 700; }
+  .diagram-wrap .rnum { font-size: 10px; font-weight: 700; fill: #111; }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 1020px) {
@@ -226,45 +260,105 @@
 </head>
 <body>
 
-<div class="board">
-  <div class="board-title">
-    CMMP-DI Phase 2 Email Routing
-    <small>(Version 20260312) &ndash; Page 1</small>
+<div class="app">
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="p1" role="tab" aria-selected="true"
+            aria-controls="panel-p1">With CMMP <small>(Page 1)</small></button>
+    <button class="tab-btn" data-tab="p2" role="tab" aria-selected="false"
+            aria-controls="panel-p2">Without CMMP <small>(Page 4)</small></button>
   </div>
 
-  <div class="board-body">
-    <div class="diagram-wrap">
-      <svg id="diagram" viewBox="0 0 1160 570" role="img"
-           aria-label="CMMP-DI Phase 2 email routing diagram"></svg>
+  <!-- ================= PAGE 1 : WITH CMMP ================= -->
+  <div class="board tab-panel" id="panel-p1" role="tabpanel">
+    <div class="board-title">
+      CMMP-DI Phase 2 Email Routing
+      <small>(Version 20260312) &ndash; Page 1</small>
     </div>
 
-    <aside class="remarks">
-      <div class="with-cmmp">With CMMP</div>
-      <div class="remark-box">
-        <div class="remark-head">Remark</div>
-        <ol>
-          <li>IMX need to configure the routing table to send emails targeting
-              the registered SMTP domains of the B/D directly to CMMP-DI,
-              bypassing GCN</li>
-          <li>CMMP-DI need to configure all Edge Servers to accept emails
-              addressed to the B/D via the GCN, CMMP and IMX connectors</li>
-          <li>If the B/D uses its own Internet Email Gateway, it need to
-              configure the Gateway to route inbound Internet emails directly
-              to CMMP-DI, bypassing its Domino server</li>
-          <li>GCN need move all registered SMTP email domains of the B/D to a
-              Foreign Domain List, ensuring that emails routed via GCN to the
-              migrated B/D are directed to CMMP-DI instead of the B/D&rsquo;s
-              Domino server</li>
-        </ol>
+    <div class="board-body">
+      <div class="diagram-wrap">
+        <svg id="diagram-p1" viewBox="0 0 1160 570" role="img"
+             aria-label="CMMP-DI Phase 2 email routing diagram, with CMMP"></svg>
       </div>
-    </aside>
+
+      <aside class="remarks">
+        <div class="badge with-cmmp">With CMMP</div>
+        <div class="remark-box">
+          <div class="remark-head">Remark</div>
+          <ol>
+            <li>IMX need to configure the routing table to send emails targeting
+                the registered SMTP domains of the B/D directly to CMMP-DI,
+                bypassing GCN</li>
+            <li>CMMP-DI need to configure all Edge Servers to accept emails
+                addressed to the B/D via the GCN, CMMP and IMX connectors</li>
+            <li>If the B/D uses its own Internet Email Gateway, it need to
+                configure the Gateway to route inbound Internet emails directly
+                to CMMP-DI, bypassing its Domino server</li>
+            <li>GCN need move all registered SMTP email domains of the B/D to a
+                Foreign Domain List, ensuring that emails routed via GCN to the
+                migrated B/D are directed to CMMP-DI instead of the B/D&rsquo;s
+                Domino server</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scenario-section">
+      <div class="scenario-head">Scenario</div>
+      <div class="scenario-grid">
+        <div class="scol" id="scol-left-p1"></div>
+        <div class="scol" id="scol-right-p1"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="scenario-section">
-    <div class="scenario-head">Scenario</div>
-    <div class="scenario-grid">
-      <div class="scol" id="scol-left"></div>
-      <div class="scol" id="scol-right"></div>
+  <!-- ================= PAGE 4 : WITHOUT CMMP ================= -->
+  <div class="board tab-panel hidden" id="panel-p2" role="tabpanel">
+    <div class="board-title">
+      CMMP-DI Phase 2 Email Routing
+      <small>(Version 20260312) &ndash; Page 4</small>
+    </div>
+
+    <div class="board-body">
+      <div class="diagram-wrap">
+        <svg id="diagram-p2" viewBox="0 0 900 570" role="img"
+             aria-label="CMMP-DI Phase 2 email routing diagram, without CMMP"></svg>
+      </div>
+
+      <aside class="remarks">
+        <div class="badge without-cmmp">Without CMMP</div>
+        <div class="remark-box">
+          <div class="remark-head">Remark</div>
+          <ol>
+            <li>IMX need to configure the routing table to send emails targeting
+                the registered SMTP domains of the B/D directly to CMMP-DI,
+                bypassing GCN</li>
+            <li>CMMP-DI need to configure all Edge Servers to accept emails
+                addressed to the B/D via the GCN and IMX connectors</li>
+            <li>If the B/D uses its own Internet Email Gateway, it need to
+                configure the Gateway to route inbound Internet emails directly
+                to CMMP-DI, bypassing its Domino server</li>
+            <li>CMMP-DI needs to copy the CMMP routing table from the CMMP edge
+                server to the CMMP-DI edge server</li>
+            <li>GCN need move all registered SMTP email domains of the B/D to a
+                Foreign Domain List, ensuring that emails routed via GCN to the
+                migrated B/D are directed to CMMP-DI instead of the B/D&rsquo;s
+                Domino server</li>
+            <li>CMMP-DI will need to remove the Smart Host feature between the
+                CMMP-DI server farm &amp; B/D Domino server farm so that all the
+                registered SMTP email domains become authoritative in
+                CMMP-DI.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scenario-section">
+      <div class="scenario-head">Scenario</div>
+      <div class="scenario-grid">
+        <div class="scol" id="scol-left-p2"></div>
+        <div class="scol" id="scol-right-p2"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -273,92 +367,170 @@
 "use strict";
 
 /* =========================================================================
-   DATA
+   PAGE 1 DATA — "With CMMP"
    ========================================================================= */
 
-const ZONES = [
-  { id: "gcn",    label: "[GCN]",     x:  20, y:  20, w: 260, h: 120, fill: "var(--zone-blue)",   stroke: "var(--zone-blue-border)"   },
-  { id: "imx",    label: "[IMX]",     x: 880, y:  20, w: 260, h: 120, fill: "var(--zone-blue)",   stroke: "var(--zone-blue-border)"   },
-  { id: "bd1",    label: "[BD1]",     x:  25, y: 230, w: 180, h: 320, fill: "var(--zone-gray)",   stroke: "var(--zone-gray-border)"   },
-  { id: "cmmp",   label: "[CMMP]",    x: 222, y: 230, w: 185, h: 320, fill: "var(--zone-orange)", stroke: "var(--zone-orange-border)" },
-  { id: "cmmpdi", label: "[CMMP-DI]", x: 424, y: 230, w: 200, h: 320, fill: "var(--zone-green)",  stroke: "var(--zone-green-border)"  },
-  { id: "bd2",    label: "[BD2]",     x: 642, y: 230, w: 335, h: 320, fill: "var(--zone-gray)",   stroke: "var(--zone-gray-border)"   }
-];
+const PAGE1 = {
+  prefix: "p1",
+  svgId: "diagram-p1",
+  panelId: "panel-p1",
+  leftColId: "scol-left-p1",
+  rightColId: "scol-right-p1",
 
-/* cx = horizontal centre, iy = icon top edge */
-const NODES = [
-  { id: "gcn-hub",        zone: "gcn",    cx:  150, iy:  38, icon: "server",  caption: ["[GCN - Hub]", "Hub Server"] },
-  { id: "imx-hub",        zone: "imx",    cx: 1010, iy:  38, icon: "server",  caption: ["[IMX - Hub]", "Hub Server"] },
-  { id: "bd1-hub",        zone: "bd1",    cx:  115, iy: 260, icon: "server",  caption: ["[BD1 - Hub]", "Hub Server", "(Domino)"] },
-  { id: "bd1-mailbox",    zone: "bd1",    cx:  115, iy: 420, icon: "mailbox", caption: ["[BD1 - Mailbox]", "Mailbox Server", "(Domino)"] },
-  { id: "cmmp-edge",      zone: "cmmp",   cx:  314, iy: 260, icon: "server",  caption: ["[CMMP-Edge]", "Edge server", "(Exchange)"] },
-  { id: "cmmp-mailbox",   zone: "cmmp",   cx:  314, iy: 420, icon: "mailbox", caption: ["[CMMP - Mailbox]", "Mailbox Server", "(Exchange)"] },
-  { id: "cmmpdi-edge",    zone: "cmmpdi", cx:  524, iy: 260, icon: "server",  caption: ["[CMMP-DI]", "Edge Server"] },
-  { id: "cmmpdi-mailbox", zone: "cmmpdi", cx:  524, iy: 420, icon: "mailbox", caption: ["[CMMP-DI Mailbox]", "Mailbox Server"] },
-  { id: "bd2-hub",        zone: "bd2",    cx:  725, iy: 260, icon: "server",  caption: ["[BD2 - Hub]", "Hub Server", "(Domino)"] },
-  { id: "bd2-mailbox",    zone: "bd2",    cx:  725, iy: 420, icon: "mailbox", caption: ["[BD2 - Mailbox]", "Mailbox Server", "(Domino)"] },
-  { id: "bd2-gateway",    zone: "bd2",    cx:  895, iy: 420, icon: "server",  caption: ["[BD2 - Gateway]", "Internet Email Gateway", "(Domino)"] },
-  { id: "internet",       zone: null,     cx: 1075, iy: 306, icon: "globe",   caption: ["[Internet]"] }
-];
+  zones: [
+    { id: "gcn",    label: "[GCN]",     x:  20, y:  20, w: 260, h: 120, fill: "var(--zone-blue)",   stroke: "var(--zone-blue-border)"   },
+    { id: "imx",    label: "[IMX]",     x: 880, y:  20, w: 260, h: 120, fill: "var(--zone-blue)",   stroke: "var(--zone-blue-border)"   },
+    { id: "bd1",    label: "[BD1]",     x:  25, y: 230, w: 180, h: 320, fill: "var(--zone-gray)",   stroke: "var(--zone-gray-border)"   },
+    { id: "cmmp",   label: "[CMMP]",    x: 222, y: 230, w: 185, h: 320, fill: "var(--zone-orange)", stroke: "var(--zone-orange-border)" },
+    { id: "cmmpdi", label: "[CMMP-DI]", x: 424, y: 230, w: 200, h: 320, fill: "var(--zone-green)",  stroke: "var(--zone-green-border)"  },
+    { id: "bd2",    label: "[BD2]",     x: 642, y: 230, w: 335, h: 320, fill: "var(--zone-gray)",   stroke: "var(--zone-gray-border)"   }
+  ],
 
-/* Every routing line: SVG path data, colour, and label-circle position. */
-const ROUTES = [
-  { n:  1, color: "#1a1a1a", d: "M 1075 302 V 60 H 1036",           label: [1075, 172] },
-  { n:  2, color: "#a883c9", d: "M 988 80 H 508 V 258",             label: [ 838,  80] },
-  { n:  3, color: "#1a1a1a", d: "M 524 306 V 418",                  label: [ 524, 362] },
-  { n:  4, color: "#1a1a1a", d: "M 1075 356 V 442 H 921",           label: [1002, 442] },
-  { n:  5, color: "#27a05d", d: "M 897 418 V 162 H 540 V 258",      label: [ 845, 162] },
-  { n:  6, color: "#8e24aa", d: "M 881 418 V 282 H 749",            label: [ 881, 352] },
-  { n:  7, color: "#1a1a1a", d: "M 725 306 V 418",                  label: [ 725, 362] },
-  { n:  8, color: "#b8860b", d: "M 172 44 H 988",                   label: [ 690,  44] },
-  { n:  9, color: "#1a1a1a", d: "M 128 54 H 95 V 258",              label: [  95, 150] },
-  { n: 10, color: "#1a1a1a", d: "M 115 306 V 418",                  label: [ 115, 362] },
-  { n: 11, color: "#29a3c4", d: "M 172 72 H 524 V 258",             label: [ 395,  72] },
-  { n: 12, color: "#f06292", d: "M 172 81 H 190 V 96 H 711 V 258",  label: [ 614,  96] },
-  { n: 13, color: "#1a1a1a", d: "M 336 282 H 502",                  label: [ 419, 282] },
-  { n: 14, color: "#d18f00", d: "M 988 62 H 306 V 258",             label: [ 748,  62] },
-  { n: 15, color: "#1a1a1a", d: "M 314 306 V 418",                  label: [ 314, 362] },
-  { n: 16, color: "#b03a2e", d: "M 320 258 V 148 H 913 V 418",      label: [ 628, 148] },
-  { n: 17, color: "#1a1a1a", d: "M 137 282 H 292",                  label: [ 215, 282] },
-  { n: 18, color: "#8d5524", d: "M 332 258 V 120 H 739 V 258",      label: [ 556, 120] },
-  { n: 19, color: "#1a1a1a", d: "M 172 56 H 296 V 258",             label: [ 296, 175] }
-];
+  /* cx = horizontal centre, iy = icon top edge */
+  nodes: [
+    { id: "gcn-hub",        zone: "gcn",    cx:  150, iy:  38, icon: "server",  caption: ["[GCN - Hub]", "Hub Server"] },
+    { id: "imx-hub",        zone: "imx",    cx: 1010, iy:  38, icon: "server",  caption: ["[IMX - Hub]", "Hub Server"] },
+    { id: "bd1-hub",        zone: "bd1",    cx:  115, iy: 260, icon: "server",  caption: ["[BD1 - Hub]", "Hub Server", "(Domino)"] },
+    { id: "bd1-mailbox",    zone: "bd1",    cx:  115, iy: 420, icon: "mailbox", caption: ["[BD1 - Mailbox]", "Mailbox Server", "(Domino)"] },
+    { id: "cmmp-edge",      zone: "cmmp",   cx:  314, iy: 260, icon: "server",  caption: ["[CMMP-Edge]", "Edge server", "(Exchange)"] },
+    { id: "cmmp-mailbox",   zone: "cmmp",   cx:  314, iy: 420, icon: "mailbox", caption: ["[CMMP - Mailbox]", "Mailbox Server", "(Exchange)"] },
+    { id: "cmmpdi-edge",    zone: "cmmpdi", cx:  524, iy: 260, icon: "server",  caption: ["[CMMP-DI]", "Edge Server"] },
+    { id: "cmmpdi-mailbox", zone: "cmmpdi", cx:  524, iy: 420, icon: "mailbox", caption: ["[CMMP-DI Mailbox]", "Mailbox Server"] },
+    { id: "bd2-hub",        zone: "bd2",    cx:  725, iy: 260, icon: "server",  caption: ["[BD2 - Hub]", "Hub Server", "(Domino)"] },
+    { id: "bd2-mailbox",    zone: "bd2",    cx:  725, iy: 420, icon: "mailbox", caption: ["[BD2 - Mailbox]", "Mailbox Server", "(Domino)"] },
+    { id: "bd2-gateway",    zone: "bd2",    cx:  895, iy: 420, icon: "server",  caption: ["[BD2 - Gateway]", "Internet Email Gateway", "(Domino)"] },
+    { id: "internet",       zone: null,     cx: 1075, iy: 306, icon: "globe",   caption: ["[Internet]"] }
+  ],
 
-/* Scenario -> route sequence + involved server nodes. */
-const SCENARIOS = {
-  1:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [1, 2, 3],      nodes: ["internet", "imx-hub", "cmmpdi-edge", "cmmpdi-mailbox"] },
-  2:  { start: "[Internet]",        end: "[CMMP Mailbox]",    routes: [1, 14, 15],    nodes: ["internet", "imx-hub", "cmmp-edge", "cmmp-mailbox"] },
-  3:  { start: "[Internet]",        end: "[BD2 Mailbox]",     routes: [4, 6, 7],      nodes: ["internet", "bd2-gateway", "bd2-hub", "bd2-mailbox"] },
-  4:  { start: "[Internet]",        end: "[BD1 Mailbox]",     routes: [1, 8, 9, 10],  nodes: ["internet", "imx-hub", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
-  5:  { start: "[CMMP-DI Mailbox]", end: "[CMMP Mailbox]",    routes: [3, 13, 15],    nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "cmmp-mailbox"] },
-  6:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [4, 5, 3],      nodes: ["internet", "bd2-gateway", "cmmpdi-edge", "cmmpdi-mailbox"] },
-  7:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [4, 16, 13, 3], nodes: ["internet", "bd2-gateway", "cmmp-edge", "cmmpdi-edge", "cmmpdi-mailbox"], oneway: true },
-  8:  { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 11, 9, 10], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
-  9:  { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 11, 12, 7], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd2-hub", "bd2-mailbox"] },
-  10: { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 13, 17, 10], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "bd1-hub", "bd1-mailbox"] },
-  11: { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 13, 18, 7], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "bd2-hub", "bd2-mailbox"] }
+  routes: [
+    { n:  1, color: "#1a1a1a", d: "M 1075 302 V 60 H 1036",           label: [1075, 172] },
+    { n:  2, color: "#a883c9", d: "M 988 80 H 508 V 258",             label: [ 838,  80] },
+    { n:  3, color: "#1a1a1a", d: "M 524 306 V 418",                  label: [ 524, 362] },
+    { n:  4, color: "#1a1a1a", d: "M 1075 356 V 442 H 921",           label: [1002, 442] },
+    { n:  5, color: "#27a05d", d: "M 897 418 V 162 H 540 V 258",      label: [ 845, 162] },
+    { n:  6, color: "#8e24aa", d: "M 881 418 V 282 H 749",            label: [ 881, 352] },
+    { n:  7, color: "#1a1a1a", d: "M 725 306 V 418",                  label: [ 725, 362] },
+    { n:  8, color: "#b8860b", d: "M 172 44 H 988",                   label: [ 690,  44] },
+    { n:  9, color: "#1a1a1a", d: "M 128 54 H 95 V 258",              label: [  95, 150] },
+    { n: 10, color: "#1a1a1a", d: "M 115 306 V 418",                  label: [ 115, 362] },
+    { n: 11, color: "#29a3c4", d: "M 172 72 H 524 V 258",             label: [ 395,  72] },
+    { n: 12, color: "#f06292", d: "M 172 81 H 190 V 96 H 711 V 258",  label: [ 614,  96] },
+    { n: 13, color: "#1a1a1a", d: "M 336 282 H 502",                  label: [ 419, 282] },
+    { n: 14, color: "#d18f00", d: "M 988 62 H 306 V 258",             label: [ 748,  62] },
+    { n: 15, color: "#1a1a1a", d: "M 314 306 V 418",                  label: [ 314, 362] },
+    { n: 16, color: "#b03a2e", d: "M 320 258 V 148 H 913 V 418",      label: [ 628, 148] },
+    { n: 17, color: "#1a1a1a", d: "M 137 282 H 292",                  label: [ 215, 282] },
+    { n: 18, color: "#8d5524", d: "M 332 258 V 120 H 739 V 258",      label: [ 556, 120] },
+    { n: 19, color: "#1a1a1a", d: "M 172 56 H 296 V 258",             label: [ 296, 175] }
+  ],
+
+  scenarios: {
+    1:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [1, 2, 3],       nodes: ["internet", "imx-hub", "cmmpdi-edge", "cmmpdi-mailbox"] },
+    2:  { start: "[Internet]",        end: "[CMMP Mailbox]",    routes: [1, 14, 15],     nodes: ["internet", "imx-hub", "cmmp-edge", "cmmp-mailbox"] },
+    3:  { start: "[Internet]",        end: "[BD2 Mailbox]",     routes: [4, 6, 7],       nodes: ["internet", "bd2-gateway", "bd2-hub", "bd2-mailbox"] },
+    4:  { start: "[Internet]",        end: "[BD1 Mailbox]",     routes: [1, 8, 9, 10],   nodes: ["internet", "imx-hub", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
+    5:  { start: "[CMMP-DI Mailbox]", end: "[CMMP Mailbox]",    routes: [3, 13, 15],     nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "cmmp-mailbox"] },
+    6:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [4, 5, 3],       nodes: ["internet", "bd2-gateway", "cmmpdi-edge", "cmmpdi-mailbox"] },
+    7:  { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [4, 16, 13, 3],  nodes: ["internet", "bd2-gateway", "cmmp-edge", "cmmpdi-edge", "cmmpdi-mailbox"], oneway: true },
+    8:  { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 11, 9, 10],  nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
+    9:  { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 11, 12, 7],  nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd2-hub", "bd2-mailbox"] },
+    10: { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 13, 17, 10], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "bd1-hub", "bd1-mailbox"] },
+    11: { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 13, 18, 7],  nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "cmmp-edge", "bd2-hub", "bd2-mailbox"] }
+  },
+
+  legendLeft: [
+    { scn: 1 }, { scn: 2 }, { scn: 3 }, { scn: 4 }, { scn: 5 },
+    { band: "BD2 has been fully migrated to CMMP/CMMP-DI" },
+    { scn: 6 }, { scn: 7 }
+  ],
+  legendRight: [
+    { band: "All BD1 and BD2 users are still using the Domino" },
+    { scn: 8 }, { scn: 9 },
+    { band: "BD1 and BD2 are partially migrated to CMMP" },
+    { scn: 10 }, { scn: 11 },
+    { remark: "Remark: BD2 has its own Internet Email Gateway and bypasses IMX, while BD1 relies on IMX." }
+  ]
 };
 
-/* Order of the two legend columns (scenario numbers, group bands, remarks). */
-const LEGEND_LEFT = [
-  { scn: 1 }, { scn: 2 }, { scn: 3 }, { scn: 4 }, { scn: 5 },
-  { band: "BD2 has been fully migrated to CMMP/CMMP-DI" },
-  { scn: 6 }, { scn: 7 }
-];
-const LEGEND_RIGHT = [
-  { band: "All BD1 and BD2 users are still using the Domino" },
-  { scn: 8 }, { scn: 9 },
-  { band: "BD1 and BD2 are partially migrated to CMMP" },
-  { scn: 10 }, { scn: 11 },
-  { remark: "Remark: BD2 has its own Internet Email Gateway and bypasses IMX, while BD1 relies on IMX." }
-];
+/* =========================================================================
+   PAGE 4 DATA — "Without CMMP"
+   ========================================================================= */
+
+const PAGE2 = {
+  prefix: "p2",
+  svgId: "diagram-p2",
+  panelId: "panel-p2",
+  leftColId: "scol-left-p2",
+  rightColId: "scol-right-p2",
+
+  zones: [
+    { id: "gcn",    label: "[GCN]",     x:  30, y:  20, w: 250, h: 130, fill: "var(--zone-blue)",  stroke: "var(--zone-blue-border)"  },
+    { id: "imx",    label: "[IMX]",     x: 480, y:  20, w: 250, h: 130, fill: "var(--zone-blue)",  stroke: "var(--zone-blue-border)"  },
+    { id: "bd1",    label: "[BD1]",     x:  20, y: 230, w: 175, h: 320, fill: "var(--zone-gray)",  stroke: "var(--zone-gray-border)"  },
+    { id: "cmmpdi", label: "[CMMP-DI]", x: 215, y: 212, w: 190, h: 338, fill: "var(--zone-green)", stroke: "var(--zone-green-border)" },
+    { id: "bd2",    label: "[BD2]",     x: 425, y: 230, w: 330, h: 320, fill: "var(--zone-gray)",  stroke: "var(--zone-gray-border)"  }
+  ],
+
+  nodes: [
+    { id: "gcn-hub",        zone: "gcn",    cx: 155, iy:  40, icon: "server",  caption: ["[GCN - Hub]", "Hub Server"] },
+    { id: "imx-hub",        zone: "imx",    cx: 605, iy:  40, icon: "server",  caption: ["[IMX - Hub]", "Hub Server"] },
+    { id: "bd1-hub",        zone: "bd1",    cx: 107, iy: 260, icon: "server",  caption: ["[BD1 - Hub]", "Hub Server", "(Domino)"] },
+    { id: "bd1-mailbox",    zone: "bd1",    cx: 107, iy: 420, icon: "mailbox", caption: ["[BD1 - Mailbox]", "Mailbox Server", "(Domino)"] },
+    { id: "cmmpdi-edge",    zone: "cmmpdi", cx: 310, iy: 260, icon: "server",  caption: ["[CMMP-DI]", "Edge Server"] },
+    { id: "cmmpdi-mailbox", zone: "cmmpdi", cx: 310, iy: 420, icon: "mailbox", caption: ["[CMMP-DI Mailbox]", "Mailbox Server"] },
+    { id: "bd2-hub",        zone: "bd2",    cx: 505, iy: 260, icon: "server",  caption: ["[BD2 - Hub]", "Hub Server", "(Domino)"] },
+    { id: "bd2-mailbox",    zone: "bd2",    cx: 505, iy: 420, icon: "mailbox", caption: ["[BD2 - Mailbox]", "Mailbox Server", "(Domino)"] },
+    { id: "bd2-gateway",    zone: "bd2",    cx: 675, iy: 420, icon: "server",  caption: ["[BD2 - Gateway]", "Internet Email Gateway", "(Domino)"] },
+    { id: "internet",       zone: null,     cx: 830, iy: 276, icon: "globe",   caption: ["[Internet]"] }
+  ],
+
+  routes: [
+    { n:  1, color: "#1a1a1a", d: "M 830 274 V 70 H 627",             label: [830, 170] },
+    { n:  2, color: "#a883c9", d: "M 583 68 H 316 V 258",             label: [355,  68] },
+    { n:  3, color: "#1a1a1a", d: "M 310 306 V 418",                  label: [310, 362] },
+    { n:  4, color: "#1a1a1a", d: "M 830 326 V 442 H 697",            label: [770, 442] },
+    { n:  5, color: "#27a05d", d: "M 679 418 V 170 H 330 V 258",      label: [600, 170] },
+    { n:  6, color: "#8e24aa", d: "M 663 418 V 282 H 527",            label: [663, 350] },
+    { n:  7, color: "#1a1a1a", d: "M 505 306 V 418",                  label: [505, 362] },
+    { n:  8, color: "#b8860b", d: "M 177 52 H 583",                   label: [380,  52] },
+    { n:  9, color: "#1a1a1a", d: "M 133 60 H 90 V 258",              label: [ 90, 160] },
+    { n: 10, color: "#1a1a1a", d: "M 107 306 V 418",                  label: [107, 362] },
+    { n: 11, color: "#29a3c4", d: "M 177 66 H 302 V 258",             label: [245,  66] },
+    { n: 12, color: "#f06292", d: "M 177 80 H 460 V 190 H 497 V 258", label: [420,  80] },
+    { n: 13, color: "#1a1a1a", d: "M 129 282 H 288",                  label: [208, 282] },
+    { n: 14, color: "#1a1a1a", d: "M 332 282 H 483",                  label: [405, 282] }
+  ],
+
+  scenarios: {
+    1: { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [1, 2, 3],      nodes: ["internet", "imx-hub", "cmmpdi-edge", "cmmpdi-mailbox"] },
+    2: { start: "[Internet]",        end: "[BD2 Mailbox]",     routes: [4, 6, 7],      nodes: ["internet", "bd2-gateway", "bd2-hub", "bd2-mailbox"] },
+    3: { start: "[Internet]",        end: "[BD1 Mailbox]",     routes: [1, 8, 9, 10],  nodes: ["internet", "imx-hub", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
+    4: { start: "[Internet]",        end: "[CMMP-DI Mailbox]", routes: [4, 5, 3],      nodes: ["internet", "bd2-gateway", "cmmpdi-edge", "cmmpdi-mailbox"], oneway: true },
+    5: { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 11, 9, 10], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd1-hub", "bd1-mailbox"] },
+    6: { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 11, 12, 7], nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "gcn-hub", "bd2-hub", "bd2-mailbox"] },
+    7: { start: "[CMMP-DI Mailbox]", end: "[BD1 Mailbox]",     routes: [3, 13, 10],    nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "bd1-hub", "bd1-mailbox"] },
+    8: { start: "[CMMP-DI Mailbox]", end: "[BD2 Mailbox]",     routes: [3, 14, 7],     nodes: ["cmmpdi-mailbox", "cmmpdi-edge", "bd2-hub", "bd2-mailbox"] }
+  },
+
+  legendLeft: [
+    { scn: 1 }, { scn: 2 }, { scn: 3 },
+    { band: "BD2 has been fully migrated to CMMP/CMMP-DI" },
+    { scn: 4 },
+    { remark: "Remark: BD2 has its own Internet Email Gateway and bypasses IMX, while BD1 relies on IMX." }
+  ],
+  legendRight: [
+    { band: "All BD1 and BD2 users are still using the Domino" },
+    { scn: 5 }, { scn: 6 },
+    { band: "BD1 and BD2 are partially migrated to CMMP-DI" },
+    { scn: 7 }, { scn: 8 }
+  ]
+};
 
 /* =========================================================================
-   SVG BUILDING
+   SVG / LEGEND BUILDERS
    ========================================================================= */
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const svg = document.getElementById("diagram");
 
 function svgEl(tag, attrs, parent) {
   const e = document.createElementNS(SVG_NS, tag);
@@ -367,49 +539,6 @@ function svgEl(tag, attrs, parent) {
   return e;
 }
 
-/* --- arrowhead markers (one per route so colours match) --- */
-const defs = svgEl("defs", {}, svg);
-for (const r of ROUTES) {
-  const m = svgEl("marker", {
-    id: "arrow-" + r.n, viewBox: "0 0 10 8",
-    refX: 9, refY: 4, markerWidth: 7, markerHeight: 6,
-    orient: "auto-start-reverse"
-  }, defs);
-  svgEl("path", { d: "M 0 0 L 10 4 L 0 8 Z", fill: r.color }, m);
-}
-
-/* --- zones --- */
-const zoneLayer = svgEl("g", {}, svg);
-for (const z of ZONES) {
-  const g = svgEl("g", { id: "zone-" + z.id, class: "dimmable" }, zoneLayer);
-  svgEl("rect", {
-    x: z.x, y: z.y, width: z.w, height: z.h, rx: 6,
-    fill: z.fill, stroke: z.stroke, "stroke-width": 1.4
-  }, g);
-  const t = svgEl("text", { x: z.x + 10, y: z.y + 20, class: "zone-label" }, g);
-  t.textContent = z.label;
-}
-
-/* --- routes --- */
-const routeLayer = svgEl("g", {}, svg);
-for (const r of ROUTES) {
-  const g = svgEl("g", { id: "route-" + r.n, class: "route dimmable" }, routeLayer);
-  svgEl("path", {
-    d: r.d, fill: "none", stroke: r.color, "stroke-width": 2,
-    "marker-start": `url(#arrow-${r.n})`, "marker-end": `url(#arrow-${r.n})`
-  }, g);
-  svgEl("circle", {
-    cx: r.label[0], cy: r.label[1], r: 10, class: "rlabel",
-    fill: "#fff", stroke: "#333", "stroke-width": 1.4
-  }, g);
-  const t = svgEl("text", {
-    x: r.label[0], y: r.label[1] + 3.5,
-    "text-anchor": "middle", class: "rnum"
-  }, g);
-  t.textContent = r.n;
-}
-
-/* --- node icons --- */
 function drawServerIcon(g, cx, iy) {
   svgEl("rect", {
     x: cx - 20, y: iy, width: 40, height: 44, rx: 3, class: "icon-main",
@@ -451,141 +580,212 @@ function drawGlobeIcon(g, cx, cy) {
   svgEl("line", { x1: cx - 24, y1: cy, x2: cx + 24, y2: cy, stroke: "#2b6ca3", "stroke-width": 1 }, g);
 }
 
-const nodeLayer = svgEl("g", {}, svg);
-for (const n of NODES) {
-  const g = svgEl("g", { id: "node-" + n.id, class: "node dimmable" }, nodeLayer);
-  if (n.icon === "globe") {
-    drawGlobeIcon(g, n.cx, n.iy + 24);
-  } else if (n.icon === "mailbox") {
-    drawMailboxIcon(g, n.cx, n.iy);
-  } else {
-    drawServerIcon(g, n.cx, n.iy);
+/* Builds one complete page (diagram + legend + interactivity). */
+function buildPage(page) {
+  const svg = document.getElementById(page.svgId);
+  const panel = document.getElementById(page.panelId);
+
+  /* --- arrowhead markers (one per route so colours match) --- */
+  const defs = svgEl("defs", {}, svg);
+  for (const r of page.routes) {
+    const m = svgEl("marker", {
+      id: `${page.prefix}-arrow-${r.n}`, viewBox: "0 0 10 8",
+      refX: 9, refY: 4, markerWidth: 7, markerHeight: 6,
+      orient: "auto-start-reverse"
+    }, defs);
+    svgEl("path", { d: "M 0 0 L 10 4 L 0 8 Z", fill: r.color }, m);
   }
-  n.caption.forEach((line, i) => {
-    const t = svgEl("text", {
-      x: n.cx, y: n.iy + 58 + i * 13,
-      "text-anchor": "middle",
-      class: "caption" + (i === 0 ? " b" : "")
+
+  /* --- zones --- */
+  const zoneEls = {};
+  const zoneLayer = svgEl("g", {}, svg);
+  for (const z of page.zones) {
+    const g = svgEl("g", { class: "dimmable" }, zoneLayer);
+    svgEl("rect", {
+      x: z.x, y: z.y, width: z.w, height: z.h, rx: 6,
+      fill: z.fill, stroke: z.stroke, "stroke-width": 1.4
     }, g);
-    t.textContent = line;
-  });
-}
-
-/* =========================================================================
-   SCENARIO LEGEND
-   ========================================================================= */
-
-function buildScenarioRow(num) {
-  const s = SCENARIOS[num];
-  const row = document.createElement("div");
-  row.className = "scenario dimmable";
-  row.dataset.scn = num;
-  row.tabIndex = 0;
-  row.setAttribute("role", "button");
-  row.setAttribute("aria-label",
-    `Scenario ${num}: ${s.start} to ${s.end} via routes ${s.routes.join(", ")}`);
-
-  const arrow = () => {
-    const a = document.createElement("span");
-    a.className = "sc-arrow";
-    a.textContent = s.oneway ? "\u25B6" : "\u25C0\u25B6";
-    return a;
-  };
-  const nodeTag = (txt) => {
-    const nd = document.createElement("span");
-    nd.className = "sc-node";
-    nd.textContent = txt;
-    return nd;
-  };
-
-  const badge = document.createElement("span");
-  badge.className = "sc-num";
-  badge.textContent = "#" + num;
-  row.appendChild(badge);
-
-  row.appendChild(nodeTag(s.start));
-  for (const rn of s.routes) {
-    row.appendChild(arrow());
-    const c = document.createElement("span");
-    c.className = "sc-route";
-    c.textContent = rn;
-    row.appendChild(c);
+    const t = svgEl("text", { x: z.x + 10, y: z.y + 20, class: "zone-label" }, g);
+    t.textContent = z.label;
+    zoneEls[z.id] = g;
   }
-  row.appendChild(arrow());
-  row.appendChild(nodeTag(s.end));
-  return row;
-}
 
-function buildColumn(items, colEl) {
-  for (const item of items) {
-    if (item.scn) {
-      colEl.appendChild(buildScenarioRow(item.scn));
-    } else if (item.band) {
-      const b = document.createElement("div");
-      b.className = "group-band";
-      b.textContent = item.band;
-      colEl.appendChild(b);
-    } else if (item.remark) {
-      const r = document.createElement("div");
-      r.className = "legend-remark";
-      r.textContent = item.remark;
-      colEl.appendChild(r);
+  /* --- routes --- */
+  const routeEls = {};
+  const routeLayer = svgEl("g", {}, svg);
+  for (const r of page.routes) {
+    const g = svgEl("g", { class: "route dimmable" }, routeLayer);
+    svgEl("path", {
+      d: r.d, fill: "none", stroke: r.color, "stroke-width": 2,
+      "marker-start": `url(#${page.prefix}-arrow-${r.n})`,
+      "marker-end": `url(#${page.prefix}-arrow-${r.n})`
+    }, g);
+    svgEl("circle", {
+      cx: r.label[0], cy: r.label[1], r: 10, class: "rlabel",
+      fill: "#fff", stroke: "#333", "stroke-width": 1.4
+    }, g);
+    const t = svgEl("text", {
+      x: r.label[0], y: r.label[1] + 3.5,
+      "text-anchor": "middle", class: "rnum"
+    }, g);
+    t.textContent = r.n;
+    routeEls[r.n] = g;
+  }
+
+  /* --- node icons --- */
+  const nodeEls = {};
+  const nodeLayer = svgEl("g", {}, svg);
+  for (const n of page.nodes) {
+    const g = svgEl("g", { class: "node dimmable" }, nodeLayer);
+    if (n.icon === "globe") {
+      drawGlobeIcon(g, n.cx, n.iy + 24);
+    } else if (n.icon === "mailbox") {
+      drawMailboxIcon(g, n.cx, n.iy);
+    } else {
+      drawServerIcon(g, n.cx, n.iy);
+    }
+    n.caption.forEach((line, i) => {
+      const t = svgEl("text", {
+        x: n.cx, y: n.iy + 58 + i * 13,
+        "text-anchor": "middle",
+        class: "caption" + (i === 0 ? " b" : "")
+      }, g);
+      t.textContent = line;
+    });
+    nodeEls[n.id] = g;
+  }
+
+  /* --- scenario legend --- */
+  const rows = [];
+
+  function buildScenarioRow(num) {
+    const s = page.scenarios[num];
+    const row = document.createElement("div");
+    row.className = "scenario dimmable";
+    row.dataset.scn = num;
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-label",
+      `Scenario ${num}: ${s.start} to ${s.end} via routes ${s.routes.join(", ")}`);
+
+    const arrow = () => {
+      const a = document.createElement("span");
+      a.className = "sc-arrow";
+      a.textContent = s.oneway ? "\u25B6" : "\u25C0\u25B6";
+      return a;
+    };
+    const nodeTag = (txt) => {
+      const nd = document.createElement("span");
+      nd.className = "sc-node";
+      nd.textContent = txt;
+      return nd;
+    };
+
+    const badge = document.createElement("span");
+    badge.className = "sc-num";
+    badge.textContent = "#" + num;
+    row.appendChild(badge);
+
+    row.appendChild(nodeTag(s.start));
+    for (const rn of s.routes) {
+      row.appendChild(arrow());
+      const c = document.createElement("span");
+      c.className = "sc-route";
+      c.textContent = rn;
+      row.appendChild(c);
+    }
+    row.appendChild(arrow());
+    row.appendChild(nodeTag(s.end));
+    rows.push(row);
+    return row;
+  }
+
+  function buildColumn(items, colEl) {
+    for (const item of items) {
+      if (item.scn) {
+        colEl.appendChild(buildScenarioRow(item.scn));
+      } else if (item.band) {
+        const b = document.createElement("div");
+        b.className = "group-band";
+        b.textContent = item.band;
+        colEl.appendChild(b);
+      } else if (item.remark) {
+        const r = document.createElement("div");
+        r.className = "legend-remark";
+        r.textContent = item.remark;
+        colEl.appendChild(r);
+      }
     }
   }
+
+  buildColumn(page.legendLeft,  document.getElementById(page.leftColId));
+  buildColumn(page.legendRight, document.getElementById(page.rightColId));
+
+  /* --- interactivity (hover highlight + 0.2 opacity dimming) --- */
+  const nodeZone = Object.fromEntries(page.nodes.map(n => [n.id, n.zone]));
+  const setDim = (el, dimmed) => el.classList.toggle("dim", dimmed);
+
+  function applyHighlight(num) {
+    const s = page.scenarios[num];
+    const routeSet = new Set(s.routes);
+    const nodeSet = new Set(s.nodes);
+    const zoneSet = new Set(s.nodes.map(id => nodeZone[id]).filter(Boolean));
+
+    for (const r of page.routes) {
+      const active = routeSet.has(r.n);
+      setDim(routeEls[r.n], !active);
+      routeEls[r.n].classList.toggle("lit", active);
+    }
+    for (const n of page.nodes) {
+      const active = nodeSet.has(n.id);
+      setDim(nodeEls[n.id], !active);
+      nodeEls[n.id].classList.toggle("lit", active);
+    }
+    for (const z of page.zones) {
+      setDim(zoneEls[z.id], !zoneSet.has(z.id));
+    }
+    for (const row of rows) {
+      const active = row.dataset.scn === String(num);
+      setDim(row, !active);
+      row.classList.toggle("active", active);
+    }
+  }
+
+  function clearHighlight() {
+    panel.querySelectorAll(".dim").forEach(el => el.classList.remove("dim"));
+    panel.querySelectorAll(".lit").forEach(el => el.classList.remove("lit"));
+    panel.querySelectorAll(".scenario.active")
+      .forEach(el => el.classList.remove("active"));
+  }
+
+  for (const row of rows) {
+    const num = Number(row.dataset.scn);
+    row.addEventListener("mouseenter", () => applyHighlight(num));
+    row.addEventListener("mouseleave", clearHighlight);
+    row.addEventListener("focus", () => applyHighlight(num));
+    row.addEventListener("blur", clearHighlight);
+  }
 }
 
-buildColumn(LEGEND_LEFT,  document.getElementById("scol-left"));
-buildColumn(LEGEND_RIGHT, document.getElementById("scol-right"));
+buildPage(PAGE1);
+buildPage(PAGE2);
 
 /* =========================================================================
-   INTERACTIVITY (hover highlight + 0.2 opacity dimming)
+   TAB SWITCHING
    ========================================================================= */
 
-const nodeZone = Object.fromEntries(NODES.map(n => [n.id, n.zone]));
-
-function setDim(el, dimmed) { el.classList.toggle("dim", dimmed); }
-
-function applyHighlight(num) {
-  const s = SCENARIOS[num];
-  const routeSet = new Set(s.routes);
-  const nodeSet = new Set(s.nodes);
-  const zoneSet = new Set(s.nodes.map(id => nodeZone[id]).filter(Boolean));
-
-  for (const r of ROUTES) {
-    const g = document.getElementById("route-" + r.n);
-    const active = routeSet.has(r.n);
-    setDim(g, !active);
-    g.classList.toggle("lit", active);
-  }
-  for (const n of NODES) {
-    const g = document.getElementById("node-" + n.id);
-    const active = nodeSet.has(n.id);
-    setDim(g, !active);
-    g.classList.toggle("lit", active);
-  }
-  for (const z of ZONES) {
-    setDim(document.getElementById("zone-" + z.id), !zoneSet.has(z.id));
-  }
-  document.querySelectorAll(".scenario").forEach(row => {
-    const active = row.dataset.scn === String(num);
-    setDim(row, !active);
-    row.classList.toggle("active", active);
+const tabButtons = document.querySelectorAll(".tab-btn");
+tabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabButtons.forEach(b => {
+      const active = b === btn;
+      b.classList.toggle("active", active);
+      b.setAttribute("aria-selected", active);
+    });
+    document.querySelectorAll(".tab-panel").forEach(p => {
+      p.classList.toggle("hidden", p.id !== "panel-" + btn.dataset.tab);
+    });
   });
-}
-
-function clearHighlight() {
-  document.querySelectorAll(".dim").forEach(el => el.classList.remove("dim"));
-  document.querySelectorAll(".lit").forEach(el => el.classList.remove("lit"));
-  document.querySelectorAll(".scenario.active")
-    .forEach(el => el.classList.remove("active"));
-}
-
-document.querySelectorAll(".scenario").forEach(row => {
-  const num = Number(row.dataset.scn);
-  row.addEventListener("mouseenter", () => applyHighlight(num));
-  row.addEventListener("mouseleave", clearHighlight);
-  row.addEventListener("focus", () => applyHighlight(num));
-  row.addEventListener("blur", clearHighlight);
 });
 </script>
 </body>
