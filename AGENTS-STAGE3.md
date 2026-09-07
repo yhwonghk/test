@@ -158,7 +158,9 @@
       when the question is a chain ("who approves before the system sends").
    2. If the flag names a candidate ID: `graphify explain "<ID>"`; and if the query
       output does not already show the link, `graphify path "<subject node label>"
-      "<ID node label>"`. Node labels come from step 1 output, not from guesses.
+      "<ID node label>"` — add `--undirected` when the CLI reports "No directed
+      path found" (SA&D relations are not read as one-way). Node labels come from
+      step 1 output, not from guesses.
    3. Record VERBATIM for every hit you rely on: node label, relation, confidence
       tag, `src`, `loc`, and the exact command that produced it.
    4. Excerpt check (the ONLY permitted document read; narrow by design). When the
