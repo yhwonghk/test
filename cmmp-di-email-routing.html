@@ -123,6 +123,11 @@
     color: #8c2b21;
     border: 1px solid #d18b7f;
   }
+  .badge.parallel-run {
+    background: linear-gradient(90deg, var(--zone-orange) 50%, var(--zone-green) 50%);
+    color: #5a2a14;
+    border: 1px solid #c2ab8c;
+  }
   .remark-box {
     border: 1px solid #c9a294;
     border-radius: 3px;
@@ -144,6 +149,34 @@
   }
   .remark-box li { margin-bottom: 8px; text-align: justify; }
   .remark-box li:last-child { margin-bottom: 0; }
+  .remark-box.fit { flex: 0 0 auto; }
+  /* justify leaves wide gaps around long, unbreakable email addresses */
+  .remark-box.align-left li { text-align: left; }
+  .addr { font-weight: 600; }
+
+  .acct-table { width: 100%; border-collapse: collapse; }
+  .acct-table th, .acct-table td {
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .acct-table tr + tr > * { border-top: 1px dashed #d9bfb3; }
+  .acct-table th { width: 1%; white-space: nowrap; }
+  .acct-table td { font-weight: 600; line-height: 1.55; }
+
+  /* System chip (CMMP / CMMP-DI), coloured like its diagram zone */
+  .sys {
+    display: inline-block;
+    margin-right: 5px;
+    padding: 0 4px;
+    border: 1px solid;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+  }
+  .sys.cmmp   { background: var(--zone-orange); border-color: var(--zone-orange-border); color: #7a4a1c; }
+  .sys.cmmpdi { background: var(--zone-green);  border-color: var(--zone-green-border);  color: #45631f; }
 
   /* ---------- Scenario section ---------- */
   .scenario-section { border-top: 1.5px solid #444; }
@@ -236,6 +269,26 @@
     font-weight: 700;
   }
 
+  /* Step row: one hop of a scenario, indented under its scenario row */
+  .scenario.step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 3px 8px;
+    margin-left: 22px;
+  }
+  .scenario.step .sc-route { grid-row: span 2; }
+  .scenario .sc-hop {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  /* keeps the arrow with its destination when the hop wraps */
+  .scenario .sc-to { display: inline-flex; align-items: center; gap: 4px; }
+  .scenario .sc-desc { font-size: 11.5px; color: #444; line-height: 1.35; }
+  .scenario .sc-desc b { color: #7a1f1f; }
+
   /* ---------- Dimming / highlighting ---------- */
   .dimmable { transition: opacity .22s ease; }
   .dim { opacity: 0.2; }
@@ -249,6 +302,10 @@
   .diagram-wrap .caption { font-size: 10.5px; fill: #222; }
   .diagram-wrap .caption.b { font-weight: 700; }
   .diagram-wrap .rnum { font-size: 10px; font-weight: 700; fill: #111; }
+  .diagram-wrap .caption.main { font-weight: 700; fill: #7a1f1f; }
+  .diagram-wrap .rnote { font-size: 10.5px; font-weight: 700; }
+  .diagram-wrap .lane-label { font-size: 13px; font-weight: 700; fill: #1c1c1c; }
+  .diagram-wrap .icon-at { font-size: 10px; font-weight: 700; fill: #8a6214; }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 1020px) {
@@ -266,6 +323,8 @@
             aria-controls="panel-p1">With CMMP <small>(Page 1)</small></button>
     <button class="tab-btn" data-tab="p2" role="tab" aria-selected="false"
             aria-controls="panel-p2">Without CMMP <small>(Page 4)</small></button>
+    <button class="tab-btn" data-tab="p3" role="tab" aria-selected="false"
+            aria-controls="panel-p3">Parallel Run <small>(Email Flow)</small></button>
   </div>
 
   <!-- ================= PAGE 1 : WITH CMMP ================= -->
@@ -358,6 +417,67 @@
       <div class="scenario-grid">
         <div class="scol" id="scol-left-p2"></div>
         <div class="scol" id="scol-right-p2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PARALLEL RUN : CMMP & CMMP-DI EMAIL FLOW ================= -->
+  <div class="board tab-panel hidden" id="panel-p3" role="tabpanel">
+    <div class="board-title">
+      CMMP &amp; CMMP-DI Parallel Run Email Flow
+      <small>(uatbdoa.gov.hk)</small>
+    </div>
+
+    <div class="board-body">
+      <div class="diagram-wrap">
+        <svg id="diagram-p3" viewBox="0 0 1000 492" role="img"
+             aria-label="Email flow between CMMP and CMMP-DI during the parallel run"></svg>
+      </div>
+
+      <aside class="remarks">
+        <div class="badge parallel-run">Parallel Run</div>
+        <div class="remark-box fit">
+          <div class="remark-head">Accounts</div>
+          <table class="acct-table">
+            <tr>
+              <th><span class="sys cmmp">CMMP</span></th>
+              <td>tmleung@uatbdoa.gov.hk<br>bwhluk@uatbdoa.gov.hk</td>
+            </tr>
+            <tr>
+              <th><span class="sys cmmpdi">CMMP-DI</span></th>
+              <td>tmleung@uatbdoa.gov.hk</td>
+            </tr>
+          </table>
+        </div>
+        <div class="remark-box align-left">
+          <div class="remark-head">Remark</div>
+          <ol>
+            <li>CMMP and CMMP-DI run in parallel with the same account on both
+                sides: <span class="addr">tmleung@uatbdoa.gov.hk</span> exists in
+                both systems, while <span class="addr">bwhluk@uatbdoa.gov.hk</span>
+                is in CMMP only</li>
+            <li>Scenario 1: in CMMP, <span class="addr">tmleung@uatbdoa.gov.hk</span>
+                is a Mail Contact, so emails sent to it from CMMP are routed to the
+                CMMP-DI mailbox. CMMP-DI then auto forwards a copy to the CMMP
+                mailbox <span class="addr">tmleung@cmmp.uatbdoa.gov.hk</span>
+                (alias as tmleung@uatbdoa.gov.hk)</li>
+            <li>Scenario 2: emails are delivered to the CMMP mailbox
+                <span class="addr">tmleung@uatbdoa.gov.hk</span>. CMMP-DI fetches
+                them from this mailbox by EWS (Exchange Web Services) sync every
+                hour, so an email can take up to about 1 hour to appear in
+                CMMP-DI</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scenario-section">
+      <div class="scenario-head">
+        Scenario &ndash; Email from bwhluk@uatbdoa.gov.hk to tmleung@uatbdoa.gov.hk
+      </div>
+      <div class="scenario-grid">
+        <div class="scol" id="scol-left-p3"></div>
+        <div class="scol" id="scol-right-p3"></div>
       </div>
     </div>
   </div>
@@ -527,6 +647,93 @@ const PAGE2 = {
 };
 
 /* =========================================================================
+   PARALLEL RUN DATA — CMMP & CMMP-DI email flow (one lane per scenario)
+   ========================================================================= */
+
+const PAGE3 = {
+  prefix: "p3",
+  svgId: "diagram-p3",
+  panelId: "panel-p3",
+  leftColId: "scol-left-p3",
+  rightColId: "scol-right-p3",
+
+  lanes: [
+    { scn: 1, x: 20, y:  10, w: 960, h: 24, text: "Scenario 1 \u2013 tmleung mainly uses CMMP-DI" },
+    { scn: 2, x: 20, y: 312, w: 960, h: 24, text: "Scenario 2 \u2013 tmleung mainly uses CMMP" }
+  ],
+
+  zones: [
+    { id: "s1-cmmp",   label: "[CMMP]",    x:  20, y:  42, w: 520, h: 256, fill: "var(--zone-orange)", stroke: "var(--zone-orange-border)" },
+    { id: "s1-cmmpdi", label: "[CMMP-DI]", x: 700, y:  42, w: 280, h: 256, fill: "var(--zone-green)",  stroke: "var(--zone-green-border)"  },
+    { id: "s2-cmmp",   label: "[CMMP]",    x:  20, y: 344, w: 520, h: 138, fill: "var(--zone-orange)", stroke: "var(--zone-orange-border)" },
+    { id: "s2-cmmpdi", label: "[CMMP-DI]", x: 700, y: 344, w: 280, h: 138, fill: "var(--zone-green)",  stroke: "var(--zone-green-border)"  }
+  ],
+
+  nodes: [
+    { id: "s1-bwhluk",  zone: "s1-cmmp",   cx: 130, iy:  76, icon: "mailbox", caption: ["[CMMP Mailbox]", "bwhluk@uatbdoa.gov.hk", "(Sender)"] },
+    { id: "s1-contact", zone: "s1-cmmp",   cx: 410, iy:  76, icon: "contact", caption: ["[CMMP Mail Contact]", "tmleung@uatbdoa.gov.hk", "(Points to CMMP-DI)"] },
+    { id: "s1-tm-cmmp", zone: "s1-cmmp",   cx: 410, iy: 196, icon: "mailbox", caption: ["[CMMP Mailbox]", "tmleung@cmmp.uatbdoa.gov.hk", "(alias as tmleung@uatbdoa.gov.hk)"] },
+    { id: "s1-tm-di",   zone: "s1-cmmpdi", cx: 840, iy:  76, icon: "mailbox", caption: ["[CMMP-DI Mailbox]", "tmleung@uatbdoa.gov.hk", { text: "(Mainly used by tmleung)", cls: "main" }] },
+    { id: "s2-bwhluk",  zone: "s2-cmmp",   cx: 130, iy: 380, icon: "mailbox", caption: ["[CMMP Mailbox]", "bwhluk@uatbdoa.gov.hk", "(Sender)"] },
+    { id: "s2-tm-cmmp", zone: "s2-cmmp",   cx: 410, iy: 380, icon: "mailbox", caption: ["[CMMP Mailbox]", "tmleung@uatbdoa.gov.hk", { text: "(Mainly used by tmleung)", cls: "main" }] },
+    { id: "s2-tm-di",   zone: "s2-cmmpdi", cx: 840, iy: 380, icon: "mailbox", caption: ["[CMMP-DI Mailbox]", "tmleung@uatbdoa.gov.hk", "(Synced copy via EWS)"] }
+  ],
+
+  /* one-way routes; lines meet icons 16px below their top edge to clear the envelope glyph */
+  routes: [
+    { n: 1, color: "#1a1a1a", oneway: true, d: "M 150 92 H 388",             label: [270,  92], ends: ["s1-bwhluk", "s1-contact"],
+      notes: [{ x: 270, y:  76, text: "Send to tmleung@uatbdoa.gov.hk" }] },
+    { n: 2, color: "#1f8a4c", oneway: true, d: "M 430 92 H 818",             label: [620,  92], ends: ["s1-contact", "s1-tm-di"],
+      notes: [{ x: 620, y:  76, text: "Routed to CMMP-DI" }] },
+    { n: 3, color: "#b03a2e", oneway: true, d: "M 860 92 H 950 V 212 H 432", label: [620, 212], ends: ["s1-tm-di", "s1-tm-cmmp"],
+      notes: [{ x: 620, y: 196, text: "Auto forward" }] },
+    { n: 4, color: "#1a1a1a", oneway: true, d: "M 150 396 H 388",            label: [270, 396], ends: ["s2-bwhluk", "s2-tm-cmmp"],
+      notes: [{ x: 270, y: 380, text: "Send to tmleung@uatbdoa.gov.hk" }] },
+    { n: 5, color: "#1f6fb2", oneway: true, d: "M 430 396 H 818", dash: "7 5", label: [620, 396], ends: ["s2-tm-cmmp", "s2-tm-di"],
+      notes: [{ x: 620, y: 380, text: "EWS sync (every hour)" },
+              { x: 620, y: 422, text: "CMMP-DI fetches from CMMP" }] }
+  ],
+
+  scenarios: {
+    1: { start: { sys: "CMMP", text: "bwhluk@uatbdoa.gov.hk" }, end: "tmleung@uatbdoa.gov.hk", routes: [1, 2, 3], oneway: true,
+         nodes: ["s1-bwhluk", "s1-contact", "s1-tm-di", "s1-tm-cmmp"] },
+    2: { start: { sys: "CMMP", text: "bwhluk@uatbdoa.gov.hk" }, end: "tmleung@uatbdoa.gov.hk", routes: [4, 5], oneway: true,
+         nodes: ["s2-bwhluk", "s2-tm-cmmp", "s2-tm-di"] }
+  },
+
+  legendLeft: [
+    { band: "Scenario 1 \u2013 tmleung mainly uses CMMP-DI" },
+    { scn: 1 },
+    { step: 1, scn: 1, action: "Send mail",
+      from: { sys: "CMMP", text: "bwhluk@uatbdoa.gov.hk" },
+      to:   { sys: "CMMP", text: "Mail Contact: tmleung@uatbdoa.gov.hk" },
+      desc: "in CMMP, tmleung@uatbdoa.gov.hk is a Mail Contact pointing to CMMP-DI" },
+    { step: 2, scn: 1, action: "Routed to CMMP-DI",
+      from: { sys: "CMMP", text: "Mail Contact: tmleung@uatbdoa.gov.hk" },
+      to:   { sys: "CMMP-DI", text: "tmleung@uatbdoa.gov.hk" },
+      desc: "delivered to the CMMP-DI mailbox that tmleung mainly uses" },
+    { step: 3, scn: 1, action: "Auto forward",
+      from: { sys: "CMMP-DI", text: "tmleung@uatbdoa.gov.hk" },
+      to:   { sys: "CMMP", text: "tmleung@cmmp.uatbdoa.gov.hk" },
+      desc: "CMMP-DI forwards a copy to the CMMP mailbox tmleung@cmmp.uatbdoa.gov.hk (alias as tmleung@uatbdoa.gov.hk)" },
+    { remark: "Result: tmleung reads the email in CMMP-DI, and the auto-forwarded copy can also be seen in CMMP." }
+  ],
+  legendRight: [
+    { band: "Scenario 2 \u2013 tmleung mainly uses CMMP" },
+    { scn: 2 },
+    { step: 4, scn: 2, action: "Send mail",
+      from: { sys: "CMMP", text: "bwhluk@uatbdoa.gov.hk" },
+      to:   { sys: "CMMP", text: "tmleung@uatbdoa.gov.hk" },
+      desc: "delivered directly to the CMMP mailbox that tmleung mainly uses" },
+    { step: 5, scn: 2, action: "EWS sync (every hour)",
+      from: { sys: "CMMP", text: "tmleung@uatbdoa.gov.hk" },
+      to:   { sys: "CMMP-DI", text: "tmleung@uatbdoa.gov.hk" },
+      desc: "CMMP-DI fetches the email from the CMMP mailbox, so CMMP-DI can see it" },
+    { remark: "Result: tmleung reads the email in CMMP straight away; it appears in CMMP-DI after the next hourly EWS sync." }
+  ]
+};
+
+/* =========================================================================
    SVG / LEGEND BUILDERS
    ========================================================================= */
 
@@ -580,6 +787,32 @@ function drawGlobeIcon(g, cx, cy) {
   svgEl("line", { x1: cx - 24, y1: cy, x2: cx + 24, y2: cy, stroke: "#2b6ca3", "stroke-width": 1 }, g);
 }
 
+/* Mail Contact: an address card with an "@" tag, same 40 x 44 footprint as the server icon. */
+function drawContactIcon(g, cx, iy) {
+  svgEl("rect", {
+    x: cx - 20, y: iy, width: 40, height: 44, rx: 3, class: "icon-main",
+    fill: "#fdfdfd", stroke: "#4a4a4a", "stroke-width": 1.3
+  }, g);
+  svgEl("circle", {
+    cx: cx - 4, cy: iy + 13, r: 6,
+    fill: "#c3d0dd", stroke: "#5f7890", "stroke-width": 1
+  }, g);
+  svgEl("path", {
+    d: `M ${cx - 15} ${iy + 33} a 11 10 0 0 1 22 0 Z`,
+    fill: "#c3d0dd", stroke: "#5f7890", "stroke-width": 1
+  }, g);
+  svgEl("circle", {
+    cx: cx + 13, cy: iy + 35, r: 7.5,
+    fill: "#fbe9c0", stroke: "#b98a2e", "stroke-width": 1.2
+  }, g);
+  const at = svgEl("text", {
+    x: cx + 13, y: iy + 38.5, "text-anchor": "middle", class: "icon-at"
+  }, g);
+  at.textContent = "@";
+}
+
+const SYS_CLASS = { "CMMP": "cmmp", "CMMP-DI": "cmmpdi" };
+
 /* Builds one complete page (diagram + legend + interactivity). */
 function buildPage(page) {
   const svg = document.getElementById(page.svgId);
@@ -594,6 +827,25 @@ function buildPage(page) {
       orient: "auto-start-reverse"
     }, defs);
     svgEl("path", { d: "M 0 0 L 10 4 L 0 8 Z", fill: r.color }, m);
+  }
+
+  /* --- scenario lane headers (optional) --- */
+  const laneEls = [];
+  if (page.lanes) {
+    const laneLayer = svgEl("g", {}, svg);
+    for (const l of page.lanes) {
+      const g = svgEl("g", { class: "dimmable" }, laneLayer);
+      svgEl("rect", {
+        x: l.x, y: l.y, width: l.w, height: l.h, rx: 3,
+        fill: "var(--band-pink)", stroke: "#d8a795", "stroke-width": 1
+      }, g);
+      const t = svgEl("text", {
+        x: l.x + l.w / 2, y: l.y + l.h / 2 + 4.5,
+        "text-anchor": "middle", class: "lane-label"
+      }, g);
+      t.textContent = l.text;
+      laneEls.push({ el: g, scn: l.scn });
+    }
   }
 
   /* --- zones --- */
@@ -615,11 +867,12 @@ function buildPage(page) {
   const routeLayer = svgEl("g", {}, svg);
   for (const r of page.routes) {
     const g = svgEl("g", { class: "route dimmable" }, routeLayer);
-    svgEl("path", {
+    const line = svgEl("path", {
       d: r.d, fill: "none", stroke: r.color, "stroke-width": 2,
-      "marker-start": `url(#${page.prefix}-arrow-${r.n})`,
       "marker-end": `url(#${page.prefix}-arrow-${r.n})`
     }, g);
+    if (!r.oneway) line.setAttribute("marker-start", `url(#${page.prefix}-arrow-${r.n})`);
+    if (r.dash) line.setAttribute("stroke-dasharray", r.dash);
     svgEl("circle", {
       cx: r.label[0], cy: r.label[1], r: 10, class: "rlabel",
       fill: "#fff", stroke: "#333", "stroke-width": 1.4
@@ -629,6 +882,12 @@ function buildPage(page) {
       "text-anchor": "middle", class: "rnum"
     }, g);
     t.textContent = r.n;
+    for (const note of r.notes || []) {
+      const nt = svgEl("text", {
+        x: note.x, y: note.y, "text-anchor": "middle", class: "rnote", fill: r.color
+      }, g);
+      nt.textContent = note.text;
+    }
     routeEls[r.n] = g;
   }
 
@@ -641,45 +900,72 @@ function buildPage(page) {
       drawGlobeIcon(g, n.cx, n.iy + 24);
     } else if (n.icon === "mailbox") {
       drawMailboxIcon(g, n.cx, n.iy);
+    } else if (n.icon === "contact") {
+      drawContactIcon(g, n.cx, n.iy);
     } else {
       drawServerIcon(g, n.cx, n.iy);
     }
+    /* caption lines are plain strings, or { text, cls } for an extra style class */
     n.caption.forEach((line, i) => {
       const t = svgEl("text", {
         x: n.cx, y: n.iy + 58 + i * 13,
         "text-anchor": "middle",
-        class: "caption" + (i === 0 ? " b" : "")
+        class: "caption" + (i === 0 ? " b" : "") + (line.cls ? " " + line.cls : "")
       }, g);
-      t.textContent = line;
+      t.textContent = typeof line === "string" ? line : line.text;
     });
     nodeEls[n.id] = g;
   }
 
   /* --- scenario legend --- */
+  /* Interactive rows: { el, kind: "scn" | "step", scn, routes, nodes } */
   const rows = [];
+
+  /* A tag is a plain string, or { sys, text } to prefix a CMMP / CMMP-DI chip. */
+  const tagText = (tag) => typeof tag === "string" ? tag : `${tag.sys} ${tag.text}`;
+
+  function nodeTag(tag) {
+    const nd = document.createElement("span");
+    nd.className = "sc-node";
+    if (typeof tag === "string") {
+      nd.textContent = tag;
+    } else {
+      const chip = document.createElement("span");
+      chip.className = "sys " + SYS_CLASS[tag.sys];
+      chip.textContent = tag.sys;
+      nd.append(chip, tag.text);
+    }
+    return nd;
+  }
+
+  function arrow(oneway) {
+    const a = document.createElement("span");
+    a.className = "sc-arrow";
+    a.textContent = oneway ? "\u25B6" : "\u25C0\u25B6";
+    return a;
+  }
+
+  function routeBadge(n) {
+    const c = document.createElement("span");
+    c.className = "sc-route";
+    c.textContent = n;
+    return c;
+  }
+
+  function interactiveRow(className, label) {
+    const row = document.createElement("div");
+    row.className = className;
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-label", label);
+    return row;
+  }
 
   function buildScenarioRow(num) {
     const s = page.scenarios[num];
-    const row = document.createElement("div");
-    row.className = "scenario dimmable";
+    const row = interactiveRow("scenario dimmable",
+      `Scenario ${num}: ${tagText(s.start)} to ${tagText(s.end)} via routes ${s.routes.join(", ")}`);
     row.dataset.scn = num;
-    row.tabIndex = 0;
-    row.setAttribute("role", "button");
-    row.setAttribute("aria-label",
-      `Scenario ${num}: ${s.start} to ${s.end} via routes ${s.routes.join(", ")}`);
-
-    const arrow = () => {
-      const a = document.createElement("span");
-      a.className = "sc-arrow";
-      a.textContent = s.oneway ? "\u25B6" : "\u25C0\u25B6";
-      return a;
-    };
-    const nodeTag = (txt) => {
-      const nd = document.createElement("span");
-      nd.className = "sc-node";
-      nd.textContent = txt;
-      return nd;
-    };
 
     const badge = document.createElement("span");
     badge.className = "sc-num";
@@ -688,21 +974,45 @@ function buildPage(page) {
 
     row.appendChild(nodeTag(s.start));
     for (const rn of s.routes) {
-      row.appendChild(arrow());
-      const c = document.createElement("span");
-      c.className = "sc-route";
-      c.textContent = rn;
-      row.appendChild(c);
+      row.appendChild(arrow(s.oneway));
+      row.appendChild(routeBadge(rn));
     }
-    row.appendChild(arrow());
+    row.appendChild(arrow(s.oneway));
     row.appendChild(nodeTag(s.end));
-    rows.push(row);
+    rows.push({ el: row, kind: "scn", scn: num, routes: s.routes, nodes: s.nodes });
+    return row;
+  }
+
+  /* One hop of a scenario; hovering it lights only that route and its two ends. */
+  function buildStepRow(item) {
+    const route = page.routes.find(r => r.n === item.step);
+    const row = interactiveRow("scenario step dimmable",
+      `Route ${item.step}, ${item.action}: ${tagText(item.from)} to ${tagText(item.to)}`);
+    row.appendChild(routeBadge(item.step));
+
+    const hop = document.createElement("span");
+    hop.className = "sc-hop";
+    const to = document.createElement("span");
+    to.className = "sc-to";
+    to.append(arrow(true), nodeTag(item.to));
+    hop.append(nodeTag(item.from), to);
+
+    const desc = document.createElement("span");
+    desc.className = "sc-desc";
+    const action = document.createElement("b");
+    action.textContent = item.action;
+    desc.append(action, " \u2013 " + item.desc);
+
+    row.append(hop, desc);
+    rows.push({ el: row, kind: "step", scn: item.scn, routes: [item.step], nodes: route.ends });
     return row;
   }
 
   function buildColumn(items, colEl) {
     for (const item of items) {
-      if (item.scn) {
+      if (item.step) {
+        colEl.appendChild(buildStepRow(item));
+      } else if (item.scn) {
         colEl.appendChild(buildScenarioRow(item.scn));
       } else if (item.band) {
         const b = document.createElement("div");
@@ -725,11 +1035,10 @@ function buildPage(page) {
   const nodeZone = Object.fromEntries(page.nodes.map(n => [n.id, n.zone]));
   const setDim = (el, dimmed) => el.classList.toggle("dim", dimmed);
 
-  function applyHighlight(num) {
-    const s = page.scenarios[num];
-    const routeSet = new Set(s.routes);
-    const nodeSet = new Set(s.nodes);
-    const zoneSet = new Set(s.nodes.map(id => nodeZone[id]).filter(Boolean));
+  function applyHighlight(entry) {
+    const routeSet = new Set(entry.routes);
+    const nodeSet = new Set(entry.nodes);
+    const zoneSet = new Set(entry.nodes.map(id => nodeZone[id]).filter(Boolean));
 
     for (const r of page.routes) {
       const active = routeSet.has(r.n);
@@ -744,10 +1053,14 @@ function buildPage(page) {
     for (const z of page.zones) {
       setDim(zoneEls[z.id], !zoneSet.has(z.id));
     }
-    for (const row of rows) {
-      const active = row.dataset.scn === String(num);
-      setDim(row, !active);
-      row.classList.toggle("active", active);
+    for (const l of laneEls) {
+      setDim(l.el, l.scn !== entry.scn);
+    }
+    /* a scenario row and its own step rows stay visible together */
+    for (const x of rows) {
+      const related = x.scn === entry.scn && x.kind !== entry.kind;
+      setDim(x.el, x !== entry && !related);
+      x.el.classList.toggle("active", x === entry);
     }
   }
 
@@ -758,17 +1071,17 @@ function buildPage(page) {
       .forEach(el => el.classList.remove("active"));
   }
 
-  for (const row of rows) {
-    const num = Number(row.dataset.scn);
-    row.addEventListener("mouseenter", () => applyHighlight(num));
-    row.addEventListener("mouseleave", clearHighlight);
-    row.addEventListener("focus", () => applyHighlight(num));
-    row.addEventListener("blur", clearHighlight);
+  for (const entry of rows) {
+    entry.el.addEventListener("mouseenter", () => applyHighlight(entry));
+    entry.el.addEventListener("mouseleave", clearHighlight);
+    entry.el.addEventListener("focus", () => applyHighlight(entry));
+    entry.el.addEventListener("blur", clearHighlight);
   }
 }
 
 buildPage(PAGE1);
 buildPage(PAGE2);
+buildPage(PAGE3);
 
 /* =========================================================================
    TAB SWITCHING
